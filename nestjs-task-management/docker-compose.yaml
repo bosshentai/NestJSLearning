@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    container_name: learning-api
+    entrypoint: ./.docker/entrypoint.sh
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+    depends_on:
+      - db
+    extra_hosts:
+      - 'host.docker.internal:172.17.0.1'
+    networks:
+      - learning-network
+
+  pgadmin:
+    image: dpage/pgadmin4:6.21
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 15432:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - learning-network
+
+  db:
+    build: .docker/postgres
+    container_name: learning-db
+    restart: always
+    tty: true
+    volumes:
+      - data_postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: learning
+      POSTGRES_PASSWORD: learning
+      POSTGRES_DB: learning
+    ports:
+      - '5432:5432'
+    networks:
+      - learning-network
+
+networks:
+  learning-network:
+    driver: bridge
+
+volumes:
+  data_postgres: {}
+  pgadmin: {}
