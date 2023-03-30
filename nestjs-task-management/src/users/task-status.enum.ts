@@ -1,0 +1,4 @@
+export enum ClientStatus {
+  AWAITING_CONFIRMATION = 'AWAITING_CONFIRMATION',
+  DISABLE = 'DISABLE',
+}
